@@ -48,6 +48,7 @@ function tweet(){
         if(error){
             return console.log('Error occurred: ' + error)
         }
+        
         //Create the beginning of the ouptut array
         var outputArr = [
                         "==============================================================================================",
@@ -63,10 +64,13 @@ function tweet(){
         //Push the ending lines to the output Array
         outputArr.push("");
         outputArr.push("==============================================================================================");
-        //Log to the console and write to log.txt each item in the array
+        
+        //Write the array to log.txt
+        fs.appendFile("log.txt", outputArr.join("\n"));
+        
+        //Log each item in the array 
         outputArr.forEach(function(item){
             console.log(item);
-            fs.appendFileSync("log.txt", "\n" + item) //use the sync version in order to assure items are written in order
         });
         
     });
@@ -92,10 +96,13 @@ function spotify(){
                         "",
                         "==============================================================================================",
                       ];
-        //log to the console and write to log.txt each item in the array
+        
+        //Write the array to log.txt
+        fs.appendFile("log.txt", outputArr.join("\n"));
+        
+        //log each item in the array
         outputArr.forEach(function(item){
             console.log(item);
-            fs.appendFile("log.txt", "\n" + item, function(error){if(error){console.log(error)}})
         });
     });
 }
@@ -124,10 +131,13 @@ function movie(){
                             "",
                             "=============================================================================================="
                         ];
-        //log to the console and write to log.txt each item in the array             
+        
+        //Write the array to log.txt
+        fs.appendFile("log.txt", outputArr.join("\n"));
+        
+        //log each item in the array             
         outputArr.forEach(function(item){
             console.log(item);
-            fs.appendFile("log.txt", "\n" + item, function(error){if(error){console.log(error)}})
         });
     });
 }
@@ -189,7 +199,7 @@ function runApp(){ //This function decides what to do based on the users choice 
 
 
 //=========================================================================================================
-//WITHOUT USING INQUIRER (Rough Draft)
+//WITHOUT USING INQUIRER/PROMPTS (Rough Draft)
 // var keys = require("./keys.js");
 // var userCommand = process.argv[2];
 // var input = process.argv[3];
