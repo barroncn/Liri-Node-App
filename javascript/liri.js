@@ -15,7 +15,7 @@ inquirer.prompt([
         name: "command",
     },
     {   
-        message: "What song would you like to hear about?",
+        message: "What song would you like to information about?",
         type: "input",
         name: "response",
         //If the user wants to know about a song, ask this follow up question
@@ -33,23 +33,25 @@ inquirer.prompt([
                 return answers.command === "Get Information for a Movie Title";
               },
         default: "If you're not sure, just press enter. I know a good one!"
-}]).then(function(answers){
+    }
+]).then(function(answers){
             userCommand = answers.command;
             response = answers.response;
             runApp();
 });
 
 function tweet(){
-    var Twitter = require("twitter");
+    var Twitter = require("twitter"); //This is the only function requiring twitter
     var client = new Twitter(keys[0]); //keys[0] is the object of twitter keys imported from keys.js
     var params = {
         screen_name: "barroncncn", //look up the handle barroncncn
         count: 20 //limit return to 20 tweets
     };
+    
     //request recent tweets
     client.get("statuses/user_timeline", params, function(error, tweets, response){
         if(error){
-            return console.log('Error occurred: ' + error)
+            return console.log('Error occurred: ' + error);
         }
         
         //Create the beginning of the ouptut array
@@ -59,11 +61,14 @@ function tweet(){
                         "Here are the 20 most recent tweets:",
                         "" 
                       ];
-        for( var i = 0; i < tweets.length; i++){ //loop through the 20 responses and push the text and date created to the output array
+        
+        //loop through the 20 responses and push the text and date created to the output array
+        for( var i = 0; i < tweets.length; i++){ 
             outputArr.push((i+1) + "." + tweets[i].text);
-            outputArr.push("   (" + tweets[i].created_at + ")")
+            outputArr.push("   (" + tweets[i].created_at + ")");
             outputArr.push("");
         }
+        
         //Push the ending lines to the output Array
         outputArr.push("");
         outputArr.push("==============================================================================================");
@@ -80,12 +85,13 @@ function tweet(){
 }
 
 function spotify(){
-    var Spotify = require("node-spotify-api");
+    var Spotify = require("node-spotify-api");//This is the only function requiring node-spotify-api
     var spotify = new Spotify(keys[1]); //keys[1] is the object of spotify keys imported from keys.js
-    spotify.search({ type: 'track', query: encodeURI(response) }, function(error, data) { //encode the input in case the user put a multi-word title in quotation marks
+    spotify.search({ type: 'track', query: encodeURI(response) }, function(error, data) { 
       if (error) {
         return console.log('Error occurred: ' + error);
       }
+      
       //create an output array
       var outputArr = [
                         "==============================================================================================",
@@ -112,11 +118,12 @@ function spotify(){
 
 function movie(){
     var request = require("request"); //This is the only function requiring "request"
-    var movieURL = "http://www.omdbapi.com/?apikey=trilogy&t=" + response; //OMDB endpoint & parameters
+    var movieURL = "http://www.omdbapi.com/?apikey=trilogy&t=" + encodeURI(response); //OMDB endpoint & parameters
     request(movieURL, function(error, data){
         if(error){
             return console.log('Error occurred: ' + error);
         }
+        
         //create the ouput array
         var outputArr = [
                             "==============================================================================================",
@@ -148,7 +155,7 @@ function movie(){
 function doText(){
     fs.readFile("random.txt", "utf8", function(error, data){ //Read the user's random.txt input
         if(error){
-            return console.log('Error occurred: ' + error)
+            return console.log('Error occurred: ' + error);
         }
         var dataArr = (data.split(",")); //create an array with items split at the comma
         userCommand = dataArr[0]; //The command is the first item in the array
@@ -164,22 +171,22 @@ function runApp(){ //This function decides what to do based on the users choice 
         tweet();
     }
     else if(userCommand === "Get Spotify Information for a Song Title" || userCommand === "spotify-this-song"){
-        //If the user entered a movie title
-        if(response !== defaultFollowUp){
+        //If the user has entered a response and it is not the default answer from the follow up question       
+        if(response && response !== defaultFollowUp){
             spotify();
         }
-        //If the user elected to be surprised, we default to The Sign by Ace of Base
+        //If the user elected to be surprised or accidentally left out the song title in random.txt, we default to The Sign by Ace of Base
         else{
             response = "The Sign ace";
             spotify();
         }
     }
     else if(userCommand === "Get Information for a Movie Title" || userCommand === "movie-this"){
-        //If the user entered a movie title
-        if(response !== defaultFollowUp){
+        //If the user has entered a response and it is not the default answer from the follow up question       
+        if(response && response !== defaultFollowUp){
             movie();
         }
-        //If the user elected to be surprised, we default to Mr. Nobody
+        //If the user elected to be surprised or accidentally left out the movie title in random.txt, we default to Mr. Nobody
         else{
             response = "Mr. Nobody";
             movie();
